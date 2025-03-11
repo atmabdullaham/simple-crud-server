@@ -31,13 +31,14 @@ async function run() {
   const database = client.db("usersDB");
   const userCollection = database.collection("users");
 
-  // get all users
+  // get all users data
   app.get("/users", async (req, res) => {
    const cursor = userCollection.find();
    const result = await cursor.toArray()
    res.send(result)
   }) //___________________________________
 
+  // get a single data
   app.get("/users/:id", async (req, res) => {
    const id = req.params.id;
    const query = { _id: new ObjectId(id) };
@@ -54,6 +55,25 @@ async function run() {
    res.send(result)
   })
   // ______________________________________
+
+  // put option
+  app.put('/users/:id', async (req, res) => {
+   const id = req.params.id;
+   const user = req.body;
+   console.log(user)
+   const filter = { _id: new ObjectId(id) };
+   const options = { upsert: true }
+   const updatedUser = {
+    $set: {
+     name: user.name,
+     email: user.email
+    },
+   };
+   const result = await userCollection.updateOne(filter, updatedUser, options);
+   res.send(result)
+  })
+
+
 
   // delete operations.................
 
